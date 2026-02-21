@@ -1,9 +1,16 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import SessionList from "./pages/SessionList";
+import SessionView from "./pages/SessionView";
+
 function App() {
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100">
-      <h1 className="text-2xl p-4">pano</h1>
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<SessionList />} />
+        <Route path="/session/:agent/:id" element={<SessionView />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
