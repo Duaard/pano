@@ -5,4 +5,4 @@
 - [x] Create `.dockerignore` to exclude node_modules, dist, and dev artifacts
 - [x] Create multi-stage `Dockerfile` (build frontend + production image with Express server)
 - [x] Update `.gitignore` to include Docker-related entries
-- [ ] Verify Docker build succeeds
+- [x] Verify Docker build succeeds
