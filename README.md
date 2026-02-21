@@ -1,73 +1,52 @@
-# React + TypeScript + Vite
+# pano
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+OpenClaw session log viewer. A local web app to browse session JSONL files with full tool call details, thinking blocks, and conversation flow.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Development
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Run both the backend API and Vite dev server:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+Or run them separately:
+
+```bash
+npm run dev:server   # Express API on port 3800
+npm run dev:client   # Vite dev server on port 5173
+```
+
+## Stack
+
+- **Frontend:** React + TypeScript + Tailwind CSS v4 (Vite)
+- **Backend:** Express (tsx) serving session data from `~/.openclaw/agents/`
+
+## API
+
+| Endpoint | Description |
+|---|---|
+| `GET /api/agents` | List agent directories |
+| `GET /api/agents/:agent/sessions` | List sessions with timestamps and message counts |
+| `GET /api/agents/:agent/sessions/:id` | Full parsed JSONL session as JSON array |
+
+## Features
+
+- Browse sessions by agent (main, coder, trainer)
+- View conversation timeline with user/assistant message bubbles
+- Expandable thinking blocks (collapsed by default)
+- Expandable tool calls with arguments and results
+- Per-message token usage badges (input/output/cache)
+- Session cost totals in USD
+
+## Notes
+
+- Local-only, no auth required
+- Read-only — no mutations
+- Expects JSONL files at `~/.openclaw/agents/{agent}/sessions/*.jsonl`
