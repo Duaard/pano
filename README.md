@@ -4,6 +4,8 @@ A local web app to browse [OpenClaw](https://github.com/openclaw/openclaw) sessi
 
 > **Note:** This project is published as-is and is not actively maintained. Issues and PRs are welcome but may not get a response.
 
+![pano screenshot](public/screenshot.png)
+
 ## Features
 
 - Browse sessions by agent
