@@ -52,26 +52,26 @@ export default function ToolCallBlock({ name, args, result }: Props) {
     <div className="my-2">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex items-center gap-2 text-xs text-cyan-400 hover:text-cyan-300 transition-colors w-full text-left"
+        className="flex items-center gap-2 text-xs text-cyan-700 hover:text-cyan-600 transition-colors w-full text-left"
       >
         <span className={`transition-transform flex-shrink-0 ${expanded ? "rotate-90" : ""}`}>▶</span>
         <span className="font-mono font-semibold">{name}</span>
-        <span className="text-gray-500 truncate">{summary}</span>
-        {isError && <span className="text-red-400 flex-shrink-0">✗</span>}
-        {result && !isError && <span className="text-green-400 flex-shrink-0">✓</span>}
+        <span className="text-gray-400 truncate">{summary}</span>
+        {isError && <span className="text-red-500 flex-shrink-0">✗</span>}
+        {result && !isError && <span className="text-green-500 flex-shrink-0">✓</span>}
       </button>
       {expanded && (
         <div className="mt-2 ml-4 space-y-2">
-          <div className="p-3 bg-gray-900 border border-gray-800 rounded text-xs font-mono whitespace-pre-wrap max-h-64 overflow-y-auto text-gray-300">
+          <div className="p-3 bg-gray-50 border border-gray-200 rounded text-xs font-mono whitespace-pre-wrap max-h-64 overflow-y-auto text-gray-700">
             {JSON.stringify(args, null, 2)}
           </div>
           {resultText && (
             <div className={`p-3 border rounded text-xs font-mono whitespace-pre-wrap max-h-64 overflow-y-auto ${
               isError
-                ? "bg-red-950/30 border-red-900/50 text-red-300"
-                : "bg-gray-900 border-gray-800 text-gray-400"
+                ? "bg-red-50 border-red-200 text-red-700"
+                : "bg-gray-50 border-gray-200 text-gray-500"
             }`}>
-              <div className="text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Result</div>
+              <div className="text-gray-400 mb-1 text-[10px] uppercase tracking-wider">Result</div>
               {resultText}
             </div>
           )}

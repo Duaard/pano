@@ -1,52 +1,52 @@
 # pano
 
-OpenClaw session log viewer. A local web app to browse session JSONL files with full tool call details, thinking blocks, and conversation flow.
+A local web app to browse [OpenClaw](https://github.com/openclaw/openclaw) session logs. View conversation timelines, tool calls, thinking blocks, and token usage from JSONL session files.
 
-## Setup
-
-```bash
-npm install
-```
-
-## Development
-
-Run both the backend API and Vite dev server:
-
-```bash
-npm run dev
-```
-
-Or run them separately:
-
-```bash
-npm run dev:server   # Express API on port 3800
-npm run dev:client   # Vite dev server on port 5173
-```
-
-## Stack
-
-- **Frontend:** React + TypeScript + Tailwind CSS v4 (Vite)
-- **Backend:** Express (tsx) serving session data from `~/.openclaw/agents/`
-
-## API
-
-| Endpoint | Description |
-|---|---|
-| `GET /api/agents` | List agent directories |
-| `GET /api/agents/:agent/sessions` | List sessions with timestamps and message counts |
-| `GET /api/agents/:agent/sessions/:id` | Full parsed JSONL session as JSON array |
+> **Note:** This project is published as-is and is not actively maintained. Issues and PRs are welcome but may not get a response.
 
 ## Features
 
-- Browse sessions by agent (main, coder, trainer)
-- View conversation timeline with user/assistant message bubbles
+- Browse sessions by agent
+- Conversation timeline with user/assistant message bubbles
 - Expandable thinking blocks (collapsed by default)
 - Expandable tool calls with arguments and results
 - Per-message token usage badges (input/output/cache)
 - Session cost totals in USD
 
-## Notes
+## Setup
 
-- Local-only, no auth required
-- Read-only — no mutations
-- Expects JSONL files at `~/.openclaw/agents/{agent}/sessions/*.jsonl`
+```bash
+npm install
+npm run dev
+```
+
+This starts the Express API (port 3800) and Vite dev server (port 5173).
+
+By default, pano reads session files from `~/.openclaw/agents/`. Override with:
+
+```bash
+AGENTS_DIR=/path/to/agents npm run dev
+```
+
+## Docker
+
+```bash
+docker compose up -d
+```
+
+This mounts `~/.openclaw/agents/` read-only and serves on port 3800.
+
+## Stack
+
+- **Frontend:** React 19 + TypeScript + Tailwind CSS v4 (Vite)
+- **Backend:** Express 5 serving session data as JSON
+
+## API
+
+- `GET /api/agents` — List agent directories
+- `GET /api/agents/:agent/sessions` — List sessions with timestamps and message counts
+- `GET /api/agents/:agent/sessions/:id` — Full parsed JSONL session
+
+## License
+
+MIT

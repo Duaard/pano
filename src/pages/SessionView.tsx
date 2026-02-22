@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { fetchSession } from "../lib/api";
 import type {
@@ -15,13 +15,23 @@ export default function SessionView() {
   const { agent, id } = useParams<{ agent: string; id: string }>();
   const [entries, setEntries] = useState<LogEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  function loadSession(scrollToBottom = true) {
     if (!agent || !id) return;
     fetchSession(agent, id).then((data) => {
       setEntries(data as LogEntry[]);
       setLoading(false);
+      setRefreshing(false);
+      if (scrollToBottom) {
+        setTimeout(() => bottomRef.current?.scrollIntoView(), 50);
+      }
     });
+  }
+
+  useEffect(() => {
+    loadSession();
   }, [agent, id]);
 
   // Build a map of tool call results by toolCallId
@@ -65,40 +75,48 @@ export default function SessionView() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 text-gray-100 p-6">
-        <p className="text-gray-500">Loading session…</p>
+      <div className="min-h-screen bg-gray-50 text-gray-900 p-6">
+        <p className="text-gray-400">Loading session…</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100">
+    <div className="min-h-screen bg-gray-50 text-gray-900">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-gray-950/95 backdrop-blur border-b border-gray-800 px-6 py-3">
+      <header className="sticky top-0 z-10 bg-white/95 backdrop-blur border-b border-gray-200 px-6 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link
               to="/"
-              className="text-gray-500 hover:text-gray-300 transition-colors text-sm"
+              className="text-gray-400 hover:text-gray-600 transition-colors text-sm"
             >
               ← back
             </Link>
             <div>
-              <h1 className="text-sm font-mono text-gray-300">
+              <h1 className="text-sm font-mono text-gray-600">
                 {agent}/{id}
               </h1>
             </div>
           </div>
-          <div className="flex items-center gap-4 text-xs text-gray-500">
+          <div className="flex items-center gap-4 text-xs text-gray-400">
+            <button
+              onClick={() => { setRefreshing(true); loadSession(false); }}
+              disabled={refreshing}
+              className="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+              title="Refresh session"
+            >
+              <span className={refreshing ? "animate-spin inline-block" : ""}>↻</span>
+            </button>
             <span>↓{sessionTotals.input.toLocaleString()}</span>
             <span>↑{sessionTotals.output.toLocaleString()}</span>
             {sessionTotals.cacheRead > 0 && (
               <span>⚡{sessionTotals.cacheRead.toLocaleString()}</span>
             )}
-            <span className="text-yellow-600 font-medium">
+            <span className="text-amber-600 font-medium">
               ${sessionTotals.cost.toFixed(4)}
             </span>
-            <span className="text-gray-600">
+            <span className="text-gray-500">
               {sessionTotals.totalTokens.toLocaleString()} tokens
             </span>
           </div>
@@ -114,6 +132,7 @@ export default function SessionView() {
             toolResults={toolResults}
           />
         ))}
+        <div ref={bottomRef} />
       </div>
     </div>
   );
@@ -154,10 +173,10 @@ function MessageBubble({
       <div
         className={`max-w-3xl w-full rounded-lg p-4 ${
           isUser
-            ? "bg-blue-950/40 border border-blue-900/40"
+            ? "bg-blue-50 border border-blue-200"
             : isSystem
-            ? "bg-gray-900/50 border border-gray-800 max-w-2xl"
-            : "bg-gray-900 border border-gray-800"
+            ? "bg-gray-100 border border-gray-200 max-w-2xl"
+            : "bg-white border border-gray-200 shadow-sm"
         }`}
       >
         {/* Role label */}
@@ -165,15 +184,15 @@ function MessageBubble({
           <span
             className={`text-[10px] uppercase tracking-wider font-semibold ${
               isUser
-                ? "text-blue-400"
+                ? "text-blue-500"
                 : isSystem
-                ? "text-gray-600"
-                : "text-green-400"
+                ? "text-gray-400"
+                : "text-green-600"
             }`}
           >
             {role}
           </span>
-          <span className="text-[10px] text-gray-600">
+          <span className="text-[10px] text-gray-400">
             {new Date(entry.timestamp).toLocaleTimeString()}
           </span>
         </div>
@@ -188,7 +207,7 @@ function MessageBubble({
 
         {/* Text content */}
         {hasTextContent && (
-          <div className={`text-sm whitespace-pre-wrap ${isSystem ? "text-gray-500" : "text-gray-200"}`}>
+          <div className={`text-sm whitespace-pre-wrap ${isSystem ? "text-gray-400" : "text-gray-800"}`}>
             {textBlocks
               .map((b) => (b as { text: string }).text)
               .join("")

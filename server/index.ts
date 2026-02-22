@@ -7,7 +7,7 @@ import os from "node:os";
 
 const app = express();
 const PORT = 3800;
-const AGENTS_DIR = path.join(os.homedir(), ".openclaw", "agents");
+const AGENTS_DIR = process.env.AGENTS_DIR || path.join(os.homedir(), ".openclaw", "agents");
 
 app.use(cors());
 
@@ -121,6 +121,15 @@ app.get("/api/agents/:agent/sessions/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to read session" });
   }
 });
+
+// In production, serve the Vite-built frontend
+const distPath = path.join(import.meta.dirname, "..", "dist");
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+  app.get("/{*splat}", (_req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`pano server listening on http://localhost:${PORT}`);

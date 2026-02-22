@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:3800";
+const API_BASE = "";
 
 export interface SessionSummary {
   id: string;

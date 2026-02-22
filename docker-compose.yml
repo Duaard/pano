@@ -1,0 +1,12 @@
+services:
+  pano:
+    build: .
+    container_name: pano
+    ports:
+      - "3800:3800"
+    volumes:
+      - ~/.openclaw/agents:/data/agents:ro
+    environment:
+      - AGENTS_DIR=/data/agents
+      - NODE_ENV=production
+    restart: unless-stopped
