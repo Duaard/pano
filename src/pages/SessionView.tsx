@@ -16,7 +16,9 @@ export default function SessionView() {
   const [entries, setEntries] = useState<LogEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [live, setLive] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const liveRef = useRef(false);
 
   function loadSession(scrollToBottom = true) {
     if (!agent || !id) return;
@@ -25,7 +27,7 @@ export default function SessionView() {
       setLoading(false);
       setRefreshing(false);
       if (scrollToBottom) {
-        setTimeout(() => bottomRef.current?.scrollIntoView(), 50);
+        setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
       }
     });
   }
@@ -33,6 +35,22 @@ export default function SessionView() {
   useEffect(() => {
     loadSession();
   }, [agent, id]);
+
+  // Keep liveRef in sync for the interval callback
+  useEffect(() => {
+    liveRef.current = live;
+  }, [live]);
+
+  // Auto-fetch when live mode is on
+  useEffect(() => {
+    if (!live) return;
+    const interval = setInterval(() => {
+      if (liveRef.current) {
+        loadSession(true);
+      }
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [live, agent, id]);
 
   // Build a map of tool call results by toolCallId
   const toolResults = new Map<string, MessageEntry>();
@@ -100,6 +118,17 @@ export default function SessionView() {
             </div>
           </div>
           <div className="flex items-center gap-4 text-xs text-gray-400">
+            <button
+              onClick={() => setLive(!live)}
+              className={`px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider transition-colors ${
+                live
+                  ? "bg-green-100 text-green-700 border border-green-300"
+                  : "bg-gray-100 text-gray-400 border border-gray-200 hover:text-gray-600"
+              }`}
+              title={live ? "Disable live mode" : "Enable live mode"}
+            >
+              <span className={live ? "animate-pulse" : ""}>●</span> Live
+            </button>
             <button
               onClick={() => { setRefreshing(true); loadSession(false); }}
               disabled={refreshing}
